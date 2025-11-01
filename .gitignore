@@ -1,0 +1,51 @@
+# --- Сборка и бинарники ---
+/app
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# --- Папки сборки ---
+/bin/
+/build/
+/dist/
+/release/
+
+# --- Кэш Go ---
+/pkg/
+/vendor/
+/.venv/
+*.a
+
+# --- IDE / редакторы ---
+# GoLand / IntelliJ
+.idea/
+# VSCode
+.vscode/
+# Sublime Text
+*.sublime-*
+# vim / emacs / etc
+*~
+*.swp
+*.swo
+
+# --- OS-специфичные ---
+.DS_Store
+Thumbs.db
+
+# --- Logs и временные ---
+*.log
+*.tmp
+*.bak
+*.old
+
+# --- Тестовые артефакты ---
+coverage.out
+*.prof
+
+# --- Environment ---
+.env
+.env.*
