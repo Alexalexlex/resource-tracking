@@ -4,6 +4,9 @@ import (
 	"log"
 	"os"
 
+	"example.com/fiber-hello/internal/controller"
+	"example.com/fiber-hello/internal/repository"
+	"example.com/fiber-hello/internal/service"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -11,6 +14,14 @@ import (
 
 func main() {
 	app := fiber.New()
+
+	// Инициализация слоёв
+	userRepo := repository.NewUserRepository()
+	userService := service.NewUserService(userRepo)
+	userController := controller.NewUserController(userService)
+
+	// Register user routes
+	userController.RegisterRoutes(app)
 
 	app.Use(func(c *fiber.Ctx) error { // простой логер
 		log.Printf("%s %s", c.Method(), c.Path())
