@@ -5,19 +5,19 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type MetaController struct {
-	service service.MetaService
+type DataController struct {
+	service service.DataService
 }
 
-func NewMetaController(service service.MetaService) *MetaController {
-	return &MetaController{service: service}
+func NewDataController(service service.DataService) *DataController {
+	return &DataController{service: service}
 }
 
-func (c *MetaController) RegisterRoutes(app *fiber.App) {
+func (c *DataController) RegisterRoutes(app *fiber.App) {
 	app.Get("/users", c.GetUsers)
 }
 
-func (c *MetaController) GetUsers(ctx *fiber.Ctx) error {
+func (c *DataController) GetUsers(ctx *fiber.Ctx) error {
 	users := c.service.GetAllUsers()
 	return ctx.JSON(users)
 }

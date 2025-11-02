@@ -5,18 +5,18 @@ import (
 	"example.com/fiber-hello/internal/repository"
 )
 
-type MetaService interface {
-	GetAllUsers() []entity.Meta
+type DataService interface {
+	GetAllUsers() []entity.Data
 }
 
-type metaService struct {
-	repo repository.MetaRepository
+type dataService struct {
+	repo repository.DataRepository
 }
 
-func NewMetaService(repo repository.MetaRepository) MetaService {
-	return &metaService{repo: repo}
+func NewDataService(repo repository.DataRepository) DataService {
+	return &dataService{repo: repo}
 }
 
-func (s *metaService) GetAllUsers() []entity.Meta {
+func (s *dataService) GetAllUsers() []entity.Data {
 	return s.repo.FindAll()
 }

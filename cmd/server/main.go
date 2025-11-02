@@ -16,12 +16,12 @@ func main() {
 	app := fiber.New()
 
 	// Инициализация слоёв
-	metaRepo := repository.NewMetaRepository()
-	metaService := service.NewMetaService(metaRepo)
-	metaController := controller.NewMetaController(metaService)
+	dataRepo := repository.NewDataRepository()
+	dataService := service.NewDataService(dataRepo)
+	dataController := controller.NewDataController(dataService)
 
 	// Register user routes
-	metaController.RegisterRoutes(app)
+	dataController.RegisterRoutes(app)
 
 	app.Use(func(c *fiber.Ctx) error { // простой логер
 		log.Printf("%s %s", c.Method(), c.Path())

@@ -4,18 +4,18 @@ import (
 	"example.com/fiber-hello/internal/entity"
 )
 
-type MetaRepository interface {
-	FindAll() []entity.Meta
+type DataRepository interface {
+	FindAll() []entity.Data
 }
 
-type metaRepo struct{}
+type dataRepo struct{}
 
-func NewMetaRepository() MetaRepository {
-	return &metaRepo{}
+func NewDataRepository() DataRepository {
+	return &dataRepo{}
 }
 
-func (r *metaRepo) FindAll() []entity.Meta {
-	return []entity.Meta{
+func (r *dataRepo) FindAll() []entity.Data {
+	return []entity.Data{
 		{ID: 1, Name: "Alice", Email: "alice@mail.com"},
 		{ID: 2, Name: "Bob", Email: "bob@mail.com"},
 	}
