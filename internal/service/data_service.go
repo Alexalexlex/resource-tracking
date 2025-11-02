@@ -6,7 +6,7 @@ import (
 )
 
 type DataService interface {
-	GetAllUsers() []entity.Data
+	SendData() []entity.Data
 }
 
 type dataService struct {
@@ -17,6 +17,6 @@ func NewDataService(repo repository.DataRepository) DataService {
 	return &dataService{repo: repo}
 }
 
-func (s *dataService) GetAllUsers() []entity.Data {
-	return s.repo.FindAll()
+func (s *dataService) SendData() []entity.Data {
+	return s.repo.SendData()
 }

@@ -14,10 +14,10 @@ func NewDataController(service service.DataService) *DataController {
 }
 
 func (c *DataController) RegisterRoutes(app *fiber.App) {
-	app.Get("/users", c.GetUsers)
+	app.Get("/send_data", c.SendData)
 }
 
-func (c *DataController) GetUsers(ctx *fiber.Ctx) error {
-	users := c.service.GetAllUsers()
+func (c *DataController) SendData(ctx *fiber.Ctx) error {
+	users := c.service.SendData()
 	return ctx.JSON(users)
 }
