@@ -1,22 +1,42 @@
 package main
 
 import (
+	"context"
 	"log"
 	"os"
+	"time"
 
 	"example.com/fiber-hello/internal/controller"
+	"example.com/fiber-hello/internal/db"
 	"example.com/fiber-hello/internal/repository"
 	"example.com/fiber-hello/internal/service"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	_ = godotenv.Load()
+	dsn := os.Getenv("DATABASE_URL")
+	if dsn == "" {
+		log.Fatal("DATABASE_URL is required")
+	}
+
+	// Контекст для старта БД
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	pool, err := db.NewPool(ctx, dsn)
+	if err != nil {
+		log.Fatalf("failed to connect to db: %v", err)
+	}
+	defer pool.Close()
+
 	app := fiber.New()
 
 	// Инициализация слоёв
-	dataRepo := repository.NewDataRepository()
+	dataRepo := repository.NewDataRepository(pool)
 	dataService := service.NewDataService(dataRepo)
 	dataController := controller.NewDataController(dataService)
 
