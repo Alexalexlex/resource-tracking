@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"time"
 
@@ -11,7 +10,7 @@ import (
 )
 
 type DataRepository interface {
-	SendData() []entity.Data
+	SendData(ctx context.Context, data entity.Data) entity.Data
 }
 
 type dataRepo struct {
@@ -22,34 +21,17 @@ func NewDataRepository(pool *pgxpool.Pool) DataRepository {
 	return &dataRepo{pool: pool}
 }
 
-func (r *dataRepo) SendData() []entity.Data {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+func (r *dataRepo) SendData(ctx context.Context, data entity.Data) entity.Data {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	rows, err := r.pool.Query(ctx, `
-		SELECT id, path, source, meta
-		FROM data
-		ORDER BY id;
-	`)
+	err := r.pool.QueryRow(ctx, `INSERT INTO data (path, source, meta)
+		 VALUES ($1, $2, $3)
+		 RETURNING id`, data.Path, data.Source, data.Meta).Scan(&data.ID)
+
 	if err != nil {
 		log.Printf("SendData query error: %v", err)
-		return []entity.Data{}
+		return entity.Data{}
 	}
-	defer rows.Close()
-
-	out := make([]entity.Data, 0, 16)
-	for rows.Next() {
-		var d entity.Data
-		var metaBytes []byte
-		if err := rows.Scan(&d.ID, &d.Path, &d.Source, &metaBytes); err != nil {
-			log.Printf("SendData scan error: %v", err)
-			continue
-		}
-		d.Meta = json.RawMessage(metaBytes)
-		out = append(out, d)
-	}
-	if err := rows.Err(); err != nil {
-		log.Printf("SendData rows error: %v", err)
-	}
-	return out
+	return data
 }

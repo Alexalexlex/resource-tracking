@@ -1,6 +1,9 @@
 package controller
 
 import (
+	"encoding/json"
+
+	"example.com/fiber-hello/internal/entity"
 	"example.com/fiber-hello/internal/service"
 	"github.com/gofiber/fiber/v2"
 )
@@ -14,10 +17,27 @@ func NewDataController(service service.DataService) *DataController {
 }
 
 func (c *DataController) RegisterRoutes(app *fiber.App) {
-	app.Get("/send_data", c.SendData)
+	app.Post("/send_data", c.SendData)
+}
+
+type createDataDTO struct {
+	Path   string          `json:"path"`
+	Source string          `json:"source"`
+	Meta   json.RawMessage `json:"meta"`
 }
 
 func (c *DataController) SendData(ctx *fiber.Ctx) error {
-	users := c.service.SendData()
-	return ctx.JSON(users)
+	var req createDataDTO
+
+	if err := ctx.BodyParser(&req); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "invalid JSON body: "+err.Error())
+	}
+
+	id := c.service.SendData(ctx.Context(), entity.Data{
+		Path:   req.Path,
+		Source: req.Source,
+		Meta:   req.Meta,
+	})
+
+	return ctx.JSON(id)
 }
