@@ -6,9 +6,9 @@ Resource Tracking System for LLM Integration
 Modern IT companies often use microservice architectures, which can introduce new challenges when integrating Large Language Models (LLMs).
 One of the key issues is high resource consumption — LLMs can demand significant computational and network resources, impacting overall system performance.
 
-Solution: Resource Tracking System
+Solution: Resource Tracking System<br>
 
-The Resource Tracking System solves this problem by monitoring and analyzing all traffic between the LLM service and any connected microservice.
+The Resource Tracking System solves this problem by monitoring and analyzing all traffic between the LLM service and any connected microservice.<br>
 This allows you to:<br>
 	•	Track requests and responses between services.<br>
 	•	View metadata for every LLM interaction.<br>
