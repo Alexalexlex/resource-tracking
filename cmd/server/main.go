@@ -40,10 +40,9 @@ func main() {
 	dataService := service.NewDataService(dataRepo)
 	dataController := controller.NewDataController(dataService)
 
-	// Register user routes
 	dataController.RegisterRoutes(app)
 
-	app.Use(func(c *fiber.Ctx) error { // простой логер
+	app.Use(func(c *fiber.Ctx) error {
 		log.Printf("%s %s", c.Method(), c.Path())
 		return c.Next()
 	})
