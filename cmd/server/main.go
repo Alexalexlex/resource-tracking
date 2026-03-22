@@ -33,39 +33,65 @@ func main() {
 	}
 	defer pool.Close()
 
+	if err := db.EnsureSchema(ctx, pool); err != nil {
+		log.Fatalf("failed to initialize schema: %v", err)
+	}
+
 	app := fiber.New()
-
-	// Инициализация слоёв
-	dataRepo := repository.NewDataRepository(pool)
-	dataService := service.NewDataService(dataRepo)
-	dataController := controller.NewDataController(dataService)
-
-	dataController.RegisterRoutes(app)
 
 	app.Use(func(c *fiber.Ctx) error {
 		log.Printf("%s %s", c.Method(), c.Path())
 		return c.Next()
 	})
 	app.Use(recover.New())
-
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowHeaders: "Content-Type, Authorization",
 	}))
 
-	// Простые роуты
+	quotaTZ := loadLocation(os.Getenv("QUOTA_TZ"))
+
+	trackingRepo := repository.NewTrackingRepository(pool)
+	trackingService := service.NewTrackingService(trackingRepo, quotaTZ)
+	trackingController := controller.NewTrackingController(trackingService)
+	trackingController.RegisterRoutes(app)
+
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{"message": "Hello, Fiber!"})
+		return c.JSON(fiber.Map{
+			"service": "resource-tracking-system",
+			"version": "mvp",
+			"docs": fiber.Map{
+				"events":     "/api/v1/events",
+				"overview":   "/api/v1/dashboard/overview",
+				"timeseries": "/api/v1/dashboard/timeseries",
+				"quotas":     "/api/v1/quotas",
+				"metrics":    "/metrics",
+			},
+		})
 	})
 	app.Get("/ping", func(c *fiber.Ctx) error {
 		return c.SendString("pong")
 	})
+	app.Get("/healthz", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{"status": "ok"})
+	})
 
-	// Порт из ENV (по умолчанию 8080)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 	log.Printf("listening on :%s", port)
 	log.Fatal(app.Listen(":" + port))
+}
+
+func loadLocation(name string) *time.Location {
+	if name == "" {
+		return time.UTC
+	}
+	location, err := time.LoadLocation(name)
+	if err != nil {
+		log.Printf("failed to load QUOTA_TZ=%q, falling back to UTC: %v", name, err)
+		return time.UTC
+	}
+	return location
 }

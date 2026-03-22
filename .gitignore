@@ -18,6 +18,7 @@
 /pkg/
 /vendor/
 /.venv/
+/.gocache/
 *.a
 
 # --- IDE / редакторы ---
@@ -49,3 +50,4 @@ coverage.out
 # --- Environment ---
 .env
 .env.*
+!.env.example
